@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Dark PDF Auto Theme",
+  "version": "0.1.0",
+  "description": "Redirects browser PDF pages to an extension viewer and applies a dark reading theme when the document appears light.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "webRequest",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Dark PDF Auto Theme"
+  }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dark PDF Viewer</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <strong>Dark PDF</strong>
+        <span id="status" class="status">Loading PDF...</span>
+      </div>
+      <div class="toolbar-right">
+        <label class="control">
+          <span>Dark Mode</span>
+          <input type="checkbox" id="darkToggle" checked />
+        </label>
+        <label class="control">
+          <span>Intensity</span>
+          <input type="range" id="strength" min="0.65" max="1" step="0.01" value="0.9" />
+        </label>
+        <a id="openOriginal" href="#" target="_blank" rel="noreferrer noopener">Open original</a>
+      </div>
+    </header>
+
+    <main class="stage">
+      <iframe id="pdfFrame" title="PDF document"></iframe>
+      <div id="loading" class="loading">Preparing document...</div>
+    </main>
+
+    <script src="viewer.js" type="module"></script>
+  </body>
+</html>
