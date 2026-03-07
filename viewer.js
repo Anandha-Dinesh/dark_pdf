@@ -13,7 +13,6 @@ const strengthNode = document.getElementById("strength");
 const originalNode = document.getElementById("openOriginal");
 const DEFAULT_SETTINGS = {
   strength: 0.9,
-  darkMode: true,
 };
 
 const params = new URLSearchParams(window.location.search);
@@ -47,10 +46,6 @@ async function loadSettings() {
       typeof stored.strength === "number"
         ? stored.strength
         : DEFAULT_SETTINGS.strength,
-    darkMode:
-      typeof stored.darkMode === "boolean"
-        ? stored.darkMode
-        : DEFAULT_SETTINGS.darkMode,
   };
 }
 
@@ -319,29 +314,46 @@ function analyzePdfTheme(bytes) {
 function setupUi(settings) {
   strengthNode.value = String(settings.strength);
   applyStrength(settings.strength);
-  toggleNode.checked = settings.darkMode;
-  applyDarkMode(settings.darkMode);
+  toggleNode.checked = true;
+  applyDarkMode(true);
 
   strengthNode.addEventListener("input", async () => {
     const value = Number(strengthNode.value);
     applyStrength(value);
-    await saveSettings({
-      strength: value,
-      darkMode: toggleNode.checked,
-    });
+    await saveSettings({ strength: value });
   });
 
-  toggleNode.addEventListener("change", async () => {
+  toggleNode.addEventListener("change", () => {
     applyDarkMode(toggleNode.checked);
-    await saveSettings({
-      strength: Number(strengthNode.value),
-      darkMode: toggleNode.checked,
-    });
     const modeLabel = toggleNode.checked ? "Dark mode on" : "Dark mode off";
     setStatus(`${modeLabel} (auto suggestion: ${autoSuggestion})`);
   });
 }
 
+async function openOriginalPdfInSeparateTab(event) {
+  event.preventDefault();
+
+  if (!pdfUrl) {
+    return;
+  }
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "openOriginalPdf",
+      url: pdfUrl,
+    });
+
+    if (response?.ok) {
+      setStatus("Opened original PDF in a separate tab.");
+      return;
+    }
+
+    throw new Error(response?.error || "Could not open original tab.");
+  } catch (error) {
+    window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    setStatus(`Opened original URL directly (${error.message}).`);
+  }
+}
 async function start() {
   if (!pdfUrl) {
     showLoading(false);
@@ -352,6 +364,7 @@ async function start() {
   }
 
   originalNode.href = pdfUrl;
+  originalNode.addEventListener("click", openOriginalPdfInSeparateTab);
   showLoading(true);
 
   const settings = await loadSettings();
@@ -386,7 +399,7 @@ async function start() {
       autoDetectedDark = toggleNode.checked;
       autoSuggestion = toggleNode.checked ? "dark" : "light";
       setStatus(
-        `Could not inspect colors (${error.message}). Using saved mode.`
+        `Could not inspect colors (${error.message}). Using current mode.`
       );
     }
 
@@ -429,3 +442,4 @@ start().catch((error) => {
   showLoading(false);
   setStatus(`Unexpected error: ${error.message}`);
 });
+
