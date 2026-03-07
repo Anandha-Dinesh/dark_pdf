@@ -1,5 +1,7 @@
 const REDIRECT_COOLDOWN_MS = 2500;
+const ORIGINAL_OPEN_BYPASS_MS = 12000;
 const recentRedirects = new Map();
+const bypassRedirectTabs = new Map();
 
 function isExtensionViewerUrl(url) {
   return url.startsWith(chrome.runtime.getURL("viewer.html"));
@@ -37,8 +39,30 @@ function hasRecentRedirect(tabId, targetUrl) {
   return false;
 }
 
+function setBypassForTab(tabId) {
+  bypassRedirectTabs.set(tabId, Date.now() + ORIGINAL_OPEN_BYPASS_MS);
+}
+
+function hasBypassForTab(tabId) {
+  const expiresAt = bypassRedirectTabs.get(tabId);
+  if (!expiresAt) {
+    return false;
+  }
+
+  if (Date.now() > expiresAt) {
+    bypassRedirectTabs.delete(tabId);
+    return false;
+  }
+
+  return true;
+}
+
 function redirectToViewer(tabId, pdfUrl) {
   if (tabId < 0 || !pdfUrl || isExtensionViewerUrl(pdfUrl)) {
+    return;
+  }
+
+  if (hasBypassForTab(tabId)) {
     return;
   }
 
@@ -54,6 +78,32 @@ function redirectToViewer(tabId, pdfUrl) {
     }
   });
 }
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (!message || message.type !== "openOriginalPdf") {
+    return;
+  }
+
+  if (typeof message.url !== "string" || !message.url) {
+    sendResponse({ ok: false, error: "Invalid original PDF URL." });
+    return;
+  }
+
+  chrome.tabs.create({ url: message.url }, (tab) => {
+    if (chrome.runtime.lastError || !tab || typeof tab.id !== "number") {
+      sendResponse({
+        ok: false,
+        error: chrome.runtime.lastError?.message || "Could not open original tab."
+      });
+      return;
+    }
+
+    setBypassForTab(tab.id);
+    sendResponse({ ok: true });
+  });
+
+  return true;
+});
 
 chrome.webRequest.onHeadersReceived.addListener(
   (details) => {
@@ -83,6 +133,12 @@ chrome.webNavigation.onCommitted.addListener((details) => {
   }
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status === "complete") {
+    bypassRedirectTabs.delete(tabId);
+  }
+});
+
 chrome.tabs.onRemoved.addListener((tabId) => {
   const prefix = `${tabId}:`;
   for (const key of recentRedirects.keys()) {
@@ -90,4 +146,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
       recentRedirects.delete(key);
     }
   }
+
+  bypassRedirectTabs.delete(tabId);
 });
+

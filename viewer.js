@@ -120,6 +120,8 @@ async function fetchPdfAsBlobUrl(url) {
 function setupUi(settings) {
   strengthNode.value = String(settings.strength);
   applyStrength(settings.strength);
+  toggleNode.checked = true;
+  applyDarkMode(true);
 
   strengthNode.addEventListener("input", async () => {
     const value = Number(strengthNode.value);
@@ -134,6 +136,30 @@ function setupUi(settings) {
   });
 }
 
+async function openOriginalPdfInSeparateTab(event) {
+  event.preventDefault();
+
+  if (!pdfUrl) {
+    return;
+  }
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "openOriginalPdf",
+      url: pdfUrl
+    });
+
+    if (response?.ok) {
+      setStatus("Opened original PDF in a separate tab.");
+      return;
+    }
+
+    throw new Error(response?.error || "Could not open original tab.");
+  } catch (error) {
+    window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    setStatus(`Opened original URL directly (${error.message}).`);
+  }
+}
 async function start() {
   if (!pdfUrl) {
     showLoading(false);
@@ -144,6 +170,7 @@ async function start() {
   }
 
   originalNode.href = pdfUrl;
+  originalNode.addEventListener("click", openOriginalPdfInSeparateTab);
   showLoading(true);
 
   const settings = await loadSettings();
@@ -154,10 +181,7 @@ async function start() {
     const sample = await readSampleBytes(pdfUrl, SAMPLE_BYTES);
     autoDetectedDark = detectLightBackground(sample);
 
-    toggleNode.checked = autoDetectedDark;
-    applyDarkMode(autoDetectedDark);
-
-    setStatus(autoDetectedDark ? "Light PDF detected. Dark mode applied." : "Dark PDF detected. Keeping original colors.");
+    setStatus(autoDetectedDark ? "Light PDF detected. Dark mode suggested." : "Dark PDF detected. Original colors suggested.");
   } catch (error) {
     autoDetectedDark = true;
     toggleNode.checked = true;
@@ -173,7 +197,7 @@ async function start() {
       "load",
       () => {
         showLoading(false);
-        if (autoDetectedDark) {
+        if (toggleNode.checked) {
           setStatus("Dark mode is active.");
         } else {
           setStatus("Original colors are active.");
@@ -198,3 +222,4 @@ start().catch((error) => {
   showLoading(false);
   setStatus(`Unexpected error: ${error.message}`);
 });
+
