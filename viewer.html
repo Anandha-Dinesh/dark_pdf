@@ -1,15 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dark PDF Viewer</title>
+    <title>NoirPDF Viewer</title>
+
+    <link rel="icon" type="image/png" href="./assets/logo.png" />
     <link rel="stylesheet" href="viewer.css" />
   </head>
   <body>
     <header class="toolbar">
       <div class="toolbar-left">
-        <strong>Dark PDF</strong>
+        <img src="./assets/logo.png" alt="NoirPDF" />
+        <strong> NoirPDF</strong>
         <span id="status" class="status">Loading PDF...</span>
       </div>
       <div class="toolbar-right">
@@ -19,9 +22,18 @@
         </label>
         <label class="control">
           <span>Intensity</span>
-          <input type="range" id="strength" min="0.65" max="1" step="0.01" value="0.9" />
+          <input
+            type="range"
+            id="strength"
+            min="0.65"
+            max="1"
+            step="0.01"
+            value="0.9"
+          />
         </label>
-        <a id="openOriginal" href="#" target="_blank" rel="noreferrer noopener">Open original</a>
+        <a id="openOriginal" href="#" target="_blank" rel="noreferrer noopener"
+          >Open original</a
+        >
       </div>
     </header>
 

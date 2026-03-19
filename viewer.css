@@ -20,6 +20,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text);
   background: var(--bg);
+  overflow-y: hidden;
 }
 
 body {
@@ -41,6 +42,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.85rem;
+}
+
+.toolbar img {
+  height: 3.2em;
+  width: auto;
 }
 
 .status {
@@ -89,7 +95,8 @@ body {
 }
 
 #pdfFrame.dark {
-  filter: invert(var(--strength)) hue-rotate(180deg) contrast(0.97) brightness(0.95);
+  filter: invert(var(--strength)) hue-rotate(180deg) contrast(0.97)
+    brightness(0.95);
 }
 
 .loading {

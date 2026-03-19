@@ -70,11 +70,16 @@ function redirectToViewer(tabId, pdfUrl) {
     return;
   }
 
-  const viewerUrl = `${chrome.runtime.getURL("viewer.html")}?file=${encodeURIComponent(pdfUrl)}`;
+  const viewerUrl = `${chrome.runtime.getURL(
+    "viewer.html"
+  )}?file=${encodeURIComponent(pdfUrl)}`;
 
   chrome.tabs.update(tabId, { url: viewerUrl }, () => {
     if (chrome.runtime.lastError) {
-      console.warn("Dark PDF redirect skipped:", chrome.runtime.lastError.message);
+      console.warn(
+        "NoirPDF redirect skipped:",
+        chrome.runtime.lastError.message
+      );
     }
   });
 }
@@ -93,7 +98,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (chrome.runtime.lastError || !tab || typeof tab.id !== "number") {
       sendResponse({
         ok: false,
-        error: chrome.runtime.lastError?.message || "Could not open original tab."
+        error:
+          chrome.runtime.lastError?.message || "Could not open original tab.",
       });
       return;
     }
@@ -149,4 +155,3 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
   bypassRedirectTabs.delete(tabId);
 });
-

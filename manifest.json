@@ -9,7 +9,17 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "icons": {
+    "16": "assets/logo.png",
+    "32": "assets/logo.png",
+    "48": "assets/logo.png",
+    "128": "assets/logo.png"
+  },
   "action": {
-    "default_title": "NoirPDF"
+    "default_title": "NoirPDF",
+    "default_icon": {
+      "32": "assets/logo.png",
+      "16": "assets/logo.png"
+    }
   }
 }

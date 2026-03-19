@@ -1,4 +1,4 @@
-# Dark PDF Auto Theme Extension
+# NoirPDF Auto Theme Extension
 
 This Chrome extension watches for PDF navigations and opens them in a custom viewer that can auto-switch to a dark-friendly reading mode.
 

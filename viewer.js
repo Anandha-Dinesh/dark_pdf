@@ -393,7 +393,7 @@ async function start() {
       } else if (analysis.looksLightBackground) {
         setStatus("Light PDF detected, but source colors suggested.");
       } else {
-        setStatus("Dark PDF detected. Original colors suggested.");
+        setStatus("NoirPDF detected. Original colors suggested.");
       }
     } catch (error) {
       autoDetectedDark = toggleNode.checked;
@@ -442,4 +442,3 @@ start().catch((error) => {
   showLoading(false);
   setStatus(`Unexpected error: ${error.message}`);
 });
-
