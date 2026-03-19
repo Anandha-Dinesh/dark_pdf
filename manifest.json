@@ -6,7 +6,7 @@
   "permissions": ["tabs", "storage", "webRequest", "webNavigation"],
   "host_permissions": ["*://*/*.pdf", "file://*/*.pdf"],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "src/background/index.js",
     "type": "module"
   },
   "icons": {

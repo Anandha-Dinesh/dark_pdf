@@ -11,6 +11,13 @@ This Chrome extension watches for PDF navigations and opens them in a custom vie
 - Applies dark mode automatically when a light background is detected.
 - Exposes manual controls for `Dark Mode` and `Intensity`.
 
+## Project structure
+
+- `src/background/` contains the service worker logic for PDF detection, redirects, and background messaging.
+- `src/viewer/` contains the viewer app split into DOM access, UI helpers, settings, PDF loading, and theme analysis.
+- `assets/` stores the extension branding and icons used by the viewer and manifest.
+- Root files such as `manifest.json`, `viewer.html`, and `viewer.css` stay as Chrome entrypoints and static assets.
+
 ## Load it in Chrome
 
 1. Open `chrome://extensions`.
